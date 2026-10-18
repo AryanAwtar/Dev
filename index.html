@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2e1007">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>श्री सम्पूर्ण आरती संग्रह | Sacred Hindu Aarti Book (Hindi & Hinglish)</title>
+    <!-- Sacred & Devotional Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Noto+Serif+Devanagari:wght@400;500;600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Rozha+One&display=swap" rel="stylesheet">
+    <!-- Dedicated Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Devotional Background Elements -->
+    <div class="bg-pattern"></div>
+    <canvas id="petal-canvas"></canvas>
+
+    <!-- Top Navigation Header -->
+    <header>
+        <div class="brand" onclick="goToCover()">
+            <span class="om-symbol">ॐ</span>
+            <div class="brand-text">
+                <h1 id="brand-main-title">सम्पूर्ण आरती संग्रह</h1>
+                <p id="brand-sub-title">Sacred Hindu Aarti Granth & Chants</p>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <!-- Inter-Book Switch Button -->
+            <a href="chalisa-book.html" class="book-switch-btn" title="श्री हनुमान व दुर्गा चालीसा संग्रह खोलें">
+                🚩 <span id="txt-switch-btn">चालीसा संग्रह</span>
+            </a>
+
+            <!-- 3-Way Language Switcher -->
+            <div class="lang-switch-box" title="भाषा चुनें (Select Language)">
+                <button class="lang-pill active" id="pill-hi" onclick="setLanguage('hi')">हिन्दी</button>
+                <button class="lang-pill" id="pill-hinglish" onclick="setLanguage('hinglish')">Hinglish</button>
+                <button class="lang-pill" id="pill-both" onclick="setLanguage('both')">दोनों (Both)</button>
+            </div>
+
+            <!-- Fullscreen Mode Switcher -->
+            <button class="ctrl-btn" id="fullscreen-btn" onclick="toggleFullScreen()" title="पूर्ण स्क्रीन (Full Screen)">
+                ⛶ <span id="txt-fullscreen-btn">फुल स्क्रीन</span>
+            </button>
+
+            <!-- A4 Mode Switcher (Dual Page vs Single Page) -->
+            <button class="ctrl-btn" id="a4-toggle-btn" onclick="toggleA4Mode()" title="A4 पृष्ठ दृश्य (Dual A4 / Single A4)">
+                📄 <span id="txt-a4-btn">एकल A4</span>
+            </button>
+
+            <!-- Table of Contents Button -->
+            <button class="ctrl-btn" onclick="toggleToc()" title="Table of Contents">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/>
+                </svg>
+                <span id="txt-toc-btn">अनुक्रमणिका</span>
+            </button>
+
+            <!-- Sacred Sound Bells -->
+            <button class="ctrl-btn" id="bell-btn" onclick="playTempleBell()" title="Play Sacred Temple Bell">
+                🔔 <span id="txt-bell-btn">घंटी</span>
+            </button>
+
+            <button class="ctrl-btn" id="chant-ambient-btn" onclick="toggleAmbientSound()" title="Devotional Drone Sound">
+                🪕 <span id="ambient-text">तानपुरा</span>
+            </button>
+
+            <!-- Download Full Book Button -->
+            <button class="ctrl-btn download-highlight-btn" onclick="openDownloadModal()" title="Download Full Book (PDF / Offline)">
+                📥 <span id="txt-download-btn">डाउनलोड पुस्तक</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Book Reading Stage (Standard A4 Dimensions) -->
+    <main class="book-stage" id="book-stage">
+        <!-- Floating Fullscreen Top Toolbar (Appears ONLY in Fullscreen) -->
+        <div class="fullscreen-top-bar" id="fs-top-bar">
+            <div class="fs-bar-left">
+                <span class="fs-bar-om">🕉️</span>
+                <span class="fs-bar-title" id="fs-top-title">श्री सम्पूर्ण आरती संग्रह</span>
+            </div>
+            <div class="fs-bar-center">
+                <select id="fs-aarti-dropdown" onchange="jumpToAarti(this.value)">
+                    <!-- Populated dynamically via JS -->
+                </select>
+            </div>
+            <div class="fs-bar-right">
+                <button type="button" class="fs-tool-btn" onclick="changeFontSize(-1)" title="अक्षर छोटा करें (A-)">A-</button>
+                <button type="button" class="fs-tool-btn" onclick="changeFontSize(1)" title="अक्षर बड़ा करें (A+)">A+</button>
+                <button type="button" class="fs-tool-btn" id="fs-audio-btn" onclick="toggleCurrentPageAudio()" title="आरती संगीत (Play Audio)">🎵</button>
+                <button type="button" class="fs-tool-btn fs-speed-btn" id="fs-speed-btn" onclick="cycleAudioSpeed()" title="गति (Speed)">1.0x</button>
+                <button type="button" class="fs-tool-btn" onclick="playTempleBell()" title="आरती घंटी (Temple Bell)">🔔</button>
+                <button type="button" class="fs-exit-btn" id="fs-exit-btn" onclick="toggleFullScreen()" title="पूर्ण स्क्रीन से बाहर निकलें (Exit Fullscreen)">
+                    🗗 <span id="txt-fs-exit">सामान्य दृश्य (Esc)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Previous Page Button -->
+        <button class="nav-btn nav-prev" id="btn-prev" onclick="prevPage()" aria-label="पिछला पृष्ठ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="book-wrapper" id="book-container">
+            <!-- Bookmark Ribbon -->
+            <div class="bookmark-ribbon" onclick="toggleBookmarkSave()" title="स्मृति चिह्न (Bookmark)"></div>
+
+            <!-- DYNAMIC CONTENT INSERTION -->
+            <div id="book-inner" style="width: 100%;">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Next Page Button -->
+        <button class="nav-btn nav-next" id="btn-next" onclick="nextPage()" aria-label="अगला पृष्ठ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+    </main>
+
+    <!-- Bottom Controls Shelf -->
+    <div class="bottom-shelf">
+        <div class="page-jumper">
+            <span id="txt-choose-aarti">आरती चुनें:</span>
+            <select id="aarti-dropdown" onchange="jumpToAarti(this.value)">
+                <!-- Generated by JS -->
+            </select>
+        </div>
+
+        <div class="reading-tools">
+            <button class="tool-icon-btn" onclick="changeFontSize(-1)" title="अक्षर छोटा करें (Decrease Font Size)">A-</button>
+            <button class="tool-icon-btn" onclick="changeFontSize(1)" title="अक्षर बड़ा करें (Increase Font Size)">A+</button>
+            <button class="tool-icon-btn" id="tool-fullscreen-btn" onclick="toggleFullScreen()" title="पूर्ण स्क्रीन (Full Screen)">⛶</button>
+            <button class="tool-icon-btn" id="btn-toggle-side" onclick="toggleSinglePageSide()" title="पृष्ठ बदलें (Mantra / Lyrics Flip)" style="display: none;">🔄</button>
+            <button class="tool-icon-btn" onclick="toggleA4Mode()" title="A4 दृश्य बदलें (Toggle Single / Dual A4)">📄</button>
+            <button class="tool-icon-btn" onclick="togglePetals()" title="पुष्प वर्षा (Toggle Petals)">🌸</button>
+            <button class="tool-icon-btn" id="btn-audio-toggle" onclick="toggleCurrentPageAudio()" title="आरती संगीत (Play Audio)">🎵</button>
+            <button class="tool-icon-btn" onclick="openDownloadModal()" title="डाउनलोड करें (Download Book)">📥</button>
+            <button class="tool-icon-btn" onclick="shareAarti()" title="साझा करें (Share)">🔗</button>
+        </div>
+    </div>
+
+    <!-- Dedicated Mobile Quick Navigation Dock (Fixed at bottom on Mobile <= 860px) -->
+    <nav class="mobile-sticky-dock" id="mobile-sticky-dock">
+        <button class="m-dock-btn" onclick="prevPage()" id="m-btn-prev" aria-label="पिछला">
+            <span class="m-dock-arrow">◀</span>
+            <span class="m-dock-txt" id="txt-m-prev">पिछला</span>
+        </button>
+        <div class="m-dock-selector">
+            <select id="m-aarti-dropdown" onchange="jumpToAarti(this.value)">
+                <!-- Populated via JS -->
+            </select>
+        </div>
+        <button class="m-dock-btn" onclick="nextPage()" id="m-btn-next" aria-label="अगला">
+            <span class="m-dock-txt" id="txt-m-next">अगला</span>
+            <span class="m-dock-arrow">▶</span>
+        </button>
+    </nav>
+
+    <!-- Table of Contents Slide-out Drawer -->
+    <div class="toc-overlay" id="toc-overlay" onclick="toggleToc()"></div>
+    <aside class="toc-drawer" id="toc-drawer">
+        <div class="toc-header">
+            <div class="toc-title" id="txt-toc-title">आरती अनुक्रमणिका</div>
+            <button class="toc-close" onclick="toggleToc()">✕</button>
+        </div>
+        <div class="toc-search">
+            <input type="text" id="toc-search-input" placeholder="देवी / देवता या आरती खोजें..." onkeyup="filterAartis(this.value)">
+        </div>
+        <ul class="toc-list" id="toc-list-items">
+            <!-- List populated dynamically -->
+        </ul>
+    </aside>
+
+    <!-- Download Book Modal -->
+    <div class="download-modal-overlay" id="download-modal" onclick="closeDownloadModal(event)">
+        <div class="download-modal" onclick="event.stopPropagation()">
+            <div class="download-modal-header">
+                <h3>📖 सम्पूर्ण आरती संग्रह डाउनलोड</h3>
+                <button class="toc-close" onclick="closeDownloadModal()">✕</button>
+            </div>
+            <div class="download-modal-body">
+                <!-- Language Preference Selector for Download -->
+                <div class="download-lang-pref-box">
+                    <div class="dl-pref-title">
+                        <span class="dl-pref-icon">🌐</span>
+                        <span>डाउनलोड भाषा प्राथमिकता (Download Language):</span>
+                    </div>
+                    <div class="dl-lang-pills">
+                        <button type="button" class="dl-lang-pill active" id="dl-lang-hi" onclick="setDownloadLang('hi')">
+                            <span class="dl-pill-check">✓</span> हिन्दी (Devanagari)
+                        </button>
+                        <button type="button" class="dl-lang-pill" id="dl-lang-hinglish" onclick="setDownloadLang('hinglish')">
+                            <span class="dl-pill-check">✓</span> Hinglish (Roman Script)
+                        </button>
+                        <button type="button" class="dl-lang-pill" id="dl-lang-both" onclick="setDownloadLang('both')">
+                            <span class="dl-pill-check">✓</span> दोनों (Bilingual Both)
+                        </button>
+                    </div>
+                    <div class="dl-lang-hint" id="dl-lang-hint">
+                        📌 चयनित: <span style="color: var(--gold-light); font-weight: normal;">हिन्दी (Devanagari)</span> — पुस्तक शुद्ध हिन्दी में डाउनलोड होगी।
+                    </div>
+                </div>
+
+                <!-- Page Layout & Space Optimization Selector -->
+                <div class="download-layout-pref-box">
+                    <div class="dl-pref-title">
+                        <span class="dl-pref-icon">📐</span>
+                        <span>पृष्ठ प्रारूप व मन्त्र व्यवस्था (Layout & Space Optimization):</span>
+                    </div>
+                    <div class="dl-layout-pills">
+                        <button type="button" class="dl-layout-pill active" id="dl-layout-compact" onclick="setDownloadLayout('compact_2col')">
+                            <span class="dl-pill-check">✓</span> 🌟 एकल पृष्ठ (2-कॉलम)
+                        </button>
+                        <button type="button" class="dl-layout-pill" id="dl-layout-mantras-end" onclick="setDownloadLayout('mantras_end')">
+                            <span class="dl-pill-check">✓</span> 📜 अंत में मन्त्र संग्रह
+                        </button>
+                        <button type="button" class="dl-layout-pill" id="dl-layout-mantras-start" onclick="setDownloadLayout('mantras_start')">
+                            <span class="dl-pill-check">✓</span> 🕉️ प्रारंभ में मन्त्र संग्रह
+                        </button>
+                        <button type="button" class="dl-layout-pill" id="dl-layout-detailed" onclick="setDownloadLayout('detailed_2page')">
+                            <span class="dl-pill-check">✓</span> 📖 विस्तृत २-पृष्ठ ग्रन्थ
+                        </button>
+                    </div>
+                    <div class="dl-lang-hint" id="dl-layout-hint">
+                        📌 प्रारूप: <span style="color: var(--gold-light); font-weight: normal;">एकल पृष्ठ सचित्र आरती (2-कॉलम)</span> — प्रत्येक आरती सचित्र मन्त्र व 2-कॉलम पदों सहित 1 पृष्ठ में (शून्य रिक्त स्थान, कुल 22 पृष्ठ)।
+                    </div>
+                </div>
+
+                <!-- Image Size & Visibility Preference for Download -->
+                <div class="download-img-pref-box">
+                    <div class="dl-pref-title">
+                        <span class="dl-pref-icon">🖼️</span>
+                        <span>प्रतिमा व्यवस्था (Deity Images in PDF):</span>
+                    </div>
+                    <div class="dl-img-pills">
+                        <button type="button" class="dl-img-pill active" id="dl-img-compact" onclick="setDownloadImgMode('compact')">
+                            <span class="dl-pill-check">✓</span> 🏷️ सूक्ष्म मुद्रा + भव्य पारदर्शी छवि (Stamp + Watermark)
+                        </button>
+                        <button type="button" class="dl-img-pill" id="dl-img-none" onclick="setDownloadImgMode('none')">
+                            <span class="dl-pill-check">✓</span> 🚫 प्रतिमा रहित (No Images / Pure Text)
+                        </button>
+                    </div>
+                    <div class="dl-lang-hint" id="dl-img-hint">
+                        📌 प्रतिमा: <span style="color: var(--gold-light); font-weight: normal;">सूक्ष्म मुद्रा (34px) + भव्य पारदर्शी दिव्य छवि (Watermark)</span> — सम्पूर्ण पृष्ठ पर प्रभु की पावन उपस्थिति, पद शत-प्रतिशत पठनीय।
+                    </div>
+                </div>
+
+                <!-- Option 1: PDF / Print -->
+                <div class="download-option-card" onclick="downloadAsPDF()">
+                    <div class="opt-info">
+                        <h4>📄 सम्पूर्ण सचित्र ग्रन्थ (PDF / Print)</h4>
+                        <p>सभी 20 आरतियाँ, ध्यान मंत्र व भावार्थ सहित A4 बुक फॉर्मेट में सेव या प्रिंट करें।</p>
+                    </div>
+                    <button class="opt-btn">प्रिंट / PDF सेव</button>
+                </div>
+
+                <!-- Option 2: Standalone HTML -->
+                <div class="download-option-card" onclick="downloadStandaloneHTML()">
+                    <div class="opt-info">
+                        <h4>💾 संपूर्ण ऑफ़लाइन वेबसाइट (.html फ़ाइल)</h4>
+                        <p>बिना इंटरनेट के मोबाइल, कंप्यूटर या टैबलेट में हमेशा पढ़ने हेतु डाउनलोड करें।</p>
+                    </div>
+                    <button class="opt-btn">HTML डाउनलोड</button>
+                </div>
+
+                <!-- Option 3: Microsoft Word Document (.doc) -->
+                <div class="download-option-card" onclick="downloadAsWord()">
+                    <div class="opt-info">
+                        <h4>📘 सम्पूर्ण सचित्र वर्ड ग्रन्थ (.doc / Word File)</h4>
+                        <p>माइक्रोसॉफ्ट वर्ड में संपादन, रंगीन मुद्रण व अध्ययन हेतु सभी चयनित प्रीसेट व छवियों सहित डाउनलोड करें।</p>
+                    </div>
+                    <button class="opt-btn">वर्ड (.doc) डाउनलोड</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Persistent Background Audio Player Element -->
+    <audio id="bg-audio-player" preload="metadata" style="display:none;"></audio>
+
+    <!-- Global Persistent Background Audio Dock -->
+    <div class="global-audio-dock" id="global-audio-dock" style="display: none;">
+        <div class="dock-audio-inner">
+            <div class="dock-audio-info" onclick="jumpToCurrentAudioPage()" title="आरती पृष्ठ पर जाएं (Go to Aarti Page)">
+                <div class="dock-audio-anim">
+                    <span class="dock-bar bar1"></span>
+                    <span class="dock-bar bar2"></span>
+                    <span class="dock-bar bar3"></span>
+                </div>
+                <div class="dock-track-details">
+                    <div class="dock-track-title" id="dock-track-title">श्री गणेश आरती</div>
+                    <div class="dock-track-sub" id="dock-track-sub">Rajshri Soul</div>
+                </div>
+            </div>
+
+            <div class="dock-audio-controls">
+                <button type="button" class="dock-btn" onclick="toggleAudioLoop()" id="dock-loop-btn" title="दोहराएं (Loop)">🔁</button>
+                <button type="button" class="dock-btn dock-play-btn" onclick="toggleAudioPlay()" id="dock-play-btn" title="चलाएं / रोकें (Play / Pause)">▶</button>
+                
+                <div class="dock-scrubber-group">
+                    <span class="dock-time" id="dock-time-cur">0:00</span>
+                    <input type="range" class="dock-scrubber" id="dock-scrubber" min="0" max="100" value="0" step="0.1" oninput="onAudioSeekInput(this.value)" onchange="onAudioSeekChange(this.value)">
+                    <span class="dock-time" id="dock-time-dur">0:00</span>
+                </div>
+
+                <div class="dock-speed-wrapper">
+                    <button type="button" class="dock-speed-btn" onclick="cycleAudioSpeed()" id="dock-speed-btn" title="गति बदलें (Cycle Speed)">1.0x</button>
+                    <select class="dock-speed-select" id="dock-speed-select" onchange="setAudioSpeed(this.value)" title="गति चुनें (Select Speed)">
+                        <option value="0.75">0.75x</option>
+                        <option value="1.0" selected>1.00x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.50x</option>
+                        <option value="1.75">1.75x</option>
+                        <option value="2.0">2.00x</option>
+                    </select>
+                </div>
+
+                <button type="button" class="dock-close-btn" onclick="stopAudio()" title="बंद करें (Stop Audio)">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Printable Book Template (Rendered dynamically on print request) -->
+    <div id="printable-book"></div>
+
+    <!-- Modular Scripts -->
+    <script src="aartis-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
